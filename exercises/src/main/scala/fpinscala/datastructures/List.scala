@@ -66,3 +66,14 @@ object List { // `List` companion object. Contains functions for creating and wo
 
   def map[A,B](l: List[A])(f: A => B): List[B] = sys.error("todo")
 }
+
+//Exercise 3.1: What will be the result of the following match expression?
+//Answer:  3 because is the first pattern that matches with the expression, otherwise it would be 15.
+object TestList {
+
+  import List._
+
+  def main(args: Array[String]) {
+    println(x)
+  }
+}
