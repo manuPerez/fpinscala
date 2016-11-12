@@ -50,13 +50,25 @@ object List { // `List` companion object. Contains functions for creating and wo
     foldRight(ns, 1.0)(_ * _) // `_ * _` is more concise notation for `(x,y) => x * y`; see sidebar
 
 
-  def tail[A](l: List[A]): List[A] = sys.error("todo")
+  def tail[A](l: List[A]): List[A] = l match {
+    case Nil => sys.error("l is empty")
+    case Cons(h, t) => t
+  }
 
-  def setHead[A](l: List[A], h: A): List[A] = sys.error("todo")
+  def setHead[A](l: List[A], h: A): List[A] = l match {
+    case Nil => sys.error("l is empty")
+    case Cons(x, xs) => Cons(h, xs)
+  }
 
-  def drop[A](l: List[A], n: Int): List[A] = sys.error("todo")
+  def drop[A](l: List[A], n: Int): List[A] = n match {
+    case 0 => l
+    case _ => drop(List.tail(l), n-1)
+  }
 
-  def dropWhile[A](l: List[A], f: A => Boolean): List[A] = sys.error("todo")
+  def dropWhile[A](l: List[A], f: A => Boolean): List[A] = l match {
+    case(h, t) if(f(h)) => dropWhile(t, f)
+    case _ => l
+  }
 
   def init[A](l: List[A]): List[A] = sys.error("todo")
 
@@ -67,13 +79,24 @@ object List { // `List` companion object. Contains functions for creating and wo
   def map[A,B](l: List[A])(f: A => B): List[B] = sys.error("todo")
 }
 
-//Exercise 3.1: What will be the result of the following match expression?
-//Answer:  3 because is the first pattern that matches with the expression, otherwise it would be 15.
 object TestList {
 
   import List._
 
   def main(args: Array[String]) {
-    println(x)
+    //Exercise 3.1: What will be the result of the following match expression?
+    //Answer:  3 because is the first pattern that matches with the expression, otherwise it would be 15.
+    //println(x)
+
+    //Exercise 3.2
+    //println(List.tail(List(1,2,3,4,5,6)))
+    //println(List.tail(List(1,Nil)))
+    //println(List.tail(List()))
+
+    //Exercise 3.3
+    println(List.setHead(List(1,2,3),4))
+
+    //Exercise 3.4
+    println(List.drop(List(1,2,3,4,5), 2))
   }
 }
