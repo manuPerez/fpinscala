@@ -1,5 +1,6 @@
 package fpinscala.datastructures
 
+
 sealed trait List[+A] // `List` data type, parameterized on a type, `A`
 case object Nil extends List[Nothing] // A `List` data constructor representing the empty list
 /* Another data constructor, representing nonempty lists. Note that `tail` is another `List[A]`,
@@ -102,8 +103,67 @@ object List { // `List` companion object. Contains functions for creating and wo
   def append2[A](a1: List[A], a2: List[A]): List[A] =
     foldRight(a1, foldRight(a2, List[A]())((h, li) => Cons(h, li)))((h2, li2) => Cons(h2, li2))
 
+  def concat[A](li: List[List[A]]): List[A] =
+    foldLeft(li, List[A]())((x, xs) => append2(x, xs))
 
-  def map[A,B](l: List[A])(f: A => B): List[B] = sys.error("todo")
+  def transform(l: List[Int]): List[Int] = l match {
+    case Nil => Nil
+    case Cons(x, xs) => Cons(x + 1, transform(xs))
+  }
+
+  def parseToString(l: List[Double]): List[String] = l match {
+    case Nil => Nil
+    case Cons(x, xs) => Cons(x.toString, parseToString(xs))
+  }
+
+  def map[A,B](l: List[A])(f: A => B): List[B] = l match {
+    case Nil => Nil
+    case Cons(x, xs) => Cons(f(x), map(xs)(f))
+  }
+
+  def filter[A](as: List[A])(f: A => Boolean): List[A] = as match {
+    case Nil => Nil
+    case Cons(x, xs) if(f(x)) => Cons(x, filter(xs)(f))
+    case Cons(x, xs) if(!f(x)) => filter(xs)(f)
+  }
+
+  def flatMap[A,B](as: List[A])(f: A => List[B]): List[B] =
+    concat(map(as)(f))
+
+  def filterViaFlatMap[A](as: List[A])(f: A => Boolean): List[A] =
+    flatMap(as)(a => if(f(a)) List(a) else Nil)
+
+  def addPairWise(a1: List[Int], a2: List[Int]): List[Int] = (a1,a2) match {
+    case (Nil, _) => Nil
+    case (_, Nil) => Nil
+    case (Cons(h1, t1), Cons(h2, t2)) => Cons((h1 + h2), addPairWise(t1, t2))
+  }
+
+  def zipWith[A,B,C](a1: List[A], a2: List[B])(f: (A,B) => C): List[C] = (a1,a2) match {
+    case (Nil, _) => Nil
+    case (_, Nil) => Nil
+    case (Cons(h1, t1), Cons(h2, t2)) => Cons(f(h1,h2), zipWith(t1,t2)(f))
+  }
+
+  def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = sup match {
+    case Nil => false
+    case Cons(x, Nil) =>
+      sub match {
+        case Nil => false
+        case Cons(y, Nil) if (y == x) => true
+        case Cons(y, Nil) if (y != x) => false
+        case Cons(y, ys) if(y == x) => true
+      }
+    case Cons(x, xs) =>
+      sub match {
+        case Nil => false
+        case Cons(y, Nil) if (y == x) => true
+        case Cons(y, Nil) if (y != x) => hasSubsequence(xs, sub)
+        case Cons(y, ys) if (y == x) => hasSubsequence(xs, ys)
+        case Cons(y, ys) if (y != x) => hasSubsequence(xs, sub)
+      }
+  }
+
 }
 
 object TestList {
@@ -113,11 +173,11 @@ object TestList {
   def main(args: Array[String]) {
     //Exercise 3.1: What will be the result of the following match expression?
     //Answer:  3 because is the first pattern that matches with the expression, otherwise it would be 15.
-    //println(x)
+    /*println(x)
 
     //Exercise 3.2
     //println(List.tail(List(1,2,3,4,5,6)))
-    //println(List.tail(List(1,Nil)))
+    println(List.tail(List(1,Nil)))
     //println(List.tail(List()))
 
     //Exercise 3.3
@@ -142,5 +202,35 @@ object TestList {
 
     //Exercise 3.14
     println(List.append2(List(1,2), List(3,4)))
+
+    //Exercise 3.15
+    println(List.concat(List(List(1,2),List(3,4),List(5,6))))
+
+    //Exercise 3.16
+    println(List.transform(List(1,2,3,4,5)))
+
+    //Exercise 3.17
+    println(List.parseToString(List(1,2,3,4,5)))
+
+    //Exercise 3.18
+    println(List.map(List(1,2,3,4,5))(_ + 2))
+
+    //Exercise 3.19
+    println(List.filter(List(1,2,3,4,5))(x => x % 2 == 0))
+
+    //Exercise 3.20
+    println(List.flatMap(List(1,2,3))(i => List(i,i)))
+
+    //Exercise 3.21
+    println(List.filterViaFlatMap(List(1,2,3,4,5))(x => x % 2 == 0))
+
+    //Exercise 3.22
+    println(List.addPairWise(List(1,2,3), List(4,5,6)))
+
+    //Exercise 3.23
+    println(List.zipWith(List(1,2,3), List(4,5,6))(_ * _))
+*/
+    //Exercise 3.24
+    println(List.hasSubsequence(List(1,2,3), List(2,3)))
   }
 }
